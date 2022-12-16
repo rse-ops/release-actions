@@ -160,7 +160,7 @@ class PostGenerator:
                 func = self.functions.get(reponame)
                 self.write_release(
                     release=release,
-                    repo=repo,
+                    repo=reponame,
                     template=template,
                     func=func,
                     layout=layout,
@@ -190,10 +190,11 @@ class PostGenerator:
         """
         Write the release from the body
         """
+        _, repo = reponame.split("/", 1)
         version = self.get_version(release)
         body = release["body"]
         if func and func in special_parsing:
-            body = special_parsing[func](body, repo, version)
+            body = special_parsing[func](body, reponame, version)
             if body is None:
                 print(f"{repo}@{version} body could not be parsed, skipping.")
                 return
