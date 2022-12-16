@@ -3,28 +3,33 @@ import re
 import sys
 
 
+def return_failure(repo, version):
+    print(f"Cannot find NEWS.md in body for {repo}@{version}.")
+    return
+
+
 def linked_news_markdown_rst(body, repo, version):
     """
     Parse a NEWS.md in the body with a ---- separator
     """
     if "NEWS.md" not in body:
         return body
+
     body = [x for x in body.split("\n") if "NEWS.md" in x]
     if not body:
-        sys.exit("Cannot find NEWS.md in body.")
+        return return_failure(repo, version)
+
     news_link = body[0].split("NEWS.md", 1)[0] + "NEWS.md)"
     match = re.search("(?P<url>https?://[^\s]+)?[)]", news_link)
     if not match:
-        sys.exit("Cannot find NEWS.md in body.")
+        return return_failure(repo, version)
+
     url = match.group("url")
     url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob", "")
     response = requests.get(url)
     if response.status_code != 200:
-        import IPython
+        return return_failure(repo, version)
 
-        IPython.embed()
-
-        sys.exit("Cannot find NEWS.md in body.")
     body = response.text
 
     # For flux, we cut at the first "---"

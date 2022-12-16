@@ -194,6 +194,9 @@ class PostGenerator:
         body = release["body"]
         if func and func in special_parsing:
             body = special_parsing[func](body, repo, version)
+            if body is None:
+                print(f"{repo}@{version} body could not be parsed, skipping.")
+                return
 
         # Releases without assets?
         if not release["assets"]:
