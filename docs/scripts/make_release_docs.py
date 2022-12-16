@@ -160,7 +160,7 @@ class PostGenerator:
                 func = self.functions.get(reponame)
                 self.write_release(
                     release=release,
-                    repo=reponame,
+                    reponame=reponame,
                     template=template,
                     func=func,
                     layout=layout,
@@ -180,7 +180,7 @@ class PostGenerator:
     def write_release(
         self,
         func,
-        repo,
+        reponame,
         release,
         template,
         layout=None,
