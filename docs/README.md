@@ -120,9 +120,9 @@ template markdown that you use (see [template.md](template.md) for the default w
 ```bash
 $ python docs/scripts/make_release_docs.py --help
 usage: make_release_docs.py [-h] [--outdir OUTDIR] [--start-at START_AT] [--author AUTHOR] [--categories CATEGORIES]
-                            [--title TITLE] [--layout LAYOUT] [--repos REPOS]
+                            [--layout LAYOUT] [--repos REPOS]
 
-Spack Updater for Releases
+Release Docs Updater
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -132,7 +132,6 @@ optional arguments:
   --author AUTHOR       post author (optional)
   --categories CATEGORIES
                         post categories, comma separated with no spaces.
-  --title TITLE         heading to put on page (title is automatically generated)
   --layout LAYOUT       layout for post, if desired to change from default.
   --repos REPOS         path for contributor-ci.yaml that has repos key
 ```

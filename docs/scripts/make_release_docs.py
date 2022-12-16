@@ -260,7 +260,7 @@ class PostGenerator:
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description="Spack Updater for Releases",
+        description="Release Docs Updater",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
