@@ -196,7 +196,6 @@ class PostGenerator:
             body = special_parsing[func](body, version)
 
         download_url = release["assets"][0]["browser_download_url"]
-        print(download_url)
 
         render = {
             "notes": body,
@@ -218,9 +217,10 @@ class PostGenerator:
         print(f"Writing {outfile} to file.")
         write_file(result, outfile)
         print("\n\n")
-        print("start ==========================================================")
+
+        print(f"::group::⭐️{release['name']}")
         print(result)
-        print("end ==========================================================")
+        print("::endgroup::")
 
     def discover_existing(self):
         """
@@ -324,12 +324,15 @@ def main():
     if args.categories:
         categories = args.categories.split(",")
 
+    author = args.author
+    if author:
+        author = author.strip('"').strip("'").strip('"')
     gen = PostGenerator(repos=args.repos, outdir=args.outdir, start_at=args.start_at)
     gen.update_docs(
         args.template,
         layout=args.layout,
         categories=categories,
-        author=args.author,
+        author=author,
     )
 
 
