@@ -216,8 +216,7 @@ class PostGenerator:
         outfile = os.path.join(self.outdir, f"{datestr}-{repo}-{version}.md")
         print(f"Writing {outfile} to file.")
         write_file(result, outfile)
-        print("\n\n")
-
+        print()
         print(f"::group::⭐️{release['name']}")
         print(result)
         print("::endgroup::")
