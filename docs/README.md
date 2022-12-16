@@ -41,6 +41,28 @@ not found, we fall back to using the raw body.
 
 ## Usage
 
+### GitHub Action
+
+This script is primarily meant to be used as a GitHub action! Here are variables allowed:
+
+|----------|----------|------------|----------|
+| Name     | Description | Required | Default |
+|----------|-----------|------------|---------|
+| token    | GitHub token | true    | unset   |
+| repos    | Path to contributor-ci.yaml file with repos index | true | contributor-ci.yaml |
+| author   | Name of author | false | unset |
+| categories | Comma separated list of categories (no spaces) for the post | false | release |
+| title    | header to write on page (not the title attribute, but in markdown).| false | "# Release Notes" |
+| layout   | Post layout to use. Default to unset (no layout, uses default site sets for posts) | false | unset |
+| outdir   | Output directory for posts (defaults to _posts in root)  | false | _posts |
+| dry_run  | Don't open a pull request - just generate files. | false | false |
+| start_at | Date string in format (YYYY-MM-DD) or YYYY to start parsing.  | false | unset |
+| branch | branch to open a pull request to | false | main |
+| template | use a custom template (should expect same variables as default) | false | template.md in repo here |
+
+
+### Locally
+
 If you want to use the action script locally - you can! Make sure to install dependencies:
 
 ```bash
@@ -82,5 +104,3 @@ optional arguments:
   --layout LAYOUT       layout for post, if desired to change from default.
   --repos REPOS         path for contributor-ci.yaml that has repos key
 ```
-
-**under development** - action is coming next!

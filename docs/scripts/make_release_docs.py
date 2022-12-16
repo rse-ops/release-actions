@@ -220,6 +220,10 @@ class PostGenerator:
         outfile = os.path.join(self.outdir, f"{datestr}-{repo}-{version}.md")
         print(f"Writing {outfile} to file.")
         write_file(result, outfile)
+        print()
+        print("🥑️ 🥑️ 🥑️")
+        print(result)
+        print("🥑️ 🥑️ 🥑️")
 
     def discover_existing(self):
         """

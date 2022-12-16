@@ -1,0 +1,24 @@
+name: Test Actions
+on:
+  pull_request: []
+
+jobs:
+  update-spack:
+    name: Generate posts for flux projects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Clone flux-framework.github.io
+        run: git clone https://github.com/flux-framework/flux-framework.github.io /tmp/flux
+
+      - name: Flux projects update
+        uses: ./docs
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          outdir: /tmp/flux/_posts
+          repos: ./contributor-ci.yaml
+          dry_run: true
+          author: flux-framework
+          layout: default
