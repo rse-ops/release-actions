@@ -8,16 +8,13 @@ This repository has a set of actions to help with releases! So far we have:
 
  - [docs](docs): Generate a Jekyll (markdown) ready post that announces your release and includes the release notes.
 
-
 See each directory above for usage instructions.
-
-
 Do you want to see another kind of action for your releases? Please [open an issue](https://github.com/rse-ops/release-actions/issues) to let us know.
 
 License
 -------
 
-Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC. 
+Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC. 
 Produced at the Lawrence Livermore National Laboratory.
 
 RADIUSS Docker is licensed under the MIT license [LICENSE](./LICENSE).

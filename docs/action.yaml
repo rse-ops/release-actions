@@ -15,10 +15,6 @@ inputs:
     description: Comma separated list (no spaces) of categories for the post. Defaults to "release"
     required: false
     default: release
-  title:
-    description: title to write on page (not the title attribute, but in markdown). Defaults to "# Release Notes" unless empty, then left out.
-    required: false
-    default: "# Release Notes"
   layout:
     description: Post layout to use. Default to unset (no layout, uses default site sets for posts)
     required: false
@@ -57,7 +53,6 @@ runs:
       outdir: ${{ inputs.outdir }}
       author: ${{ inputs.author }}
       categories: ${{ inputs.categories }}
-      title: ${{ inputs.title }}
       layout: ${{ inputs.layout }}
       repos: ${{ inputs.repos }}
       start_at: ${{ inputs.start_at }}
@@ -70,16 +65,13 @@ runs:
       fi
       cmd="python ${action_path}/scripts/make_release_docs.py --repos ${repos} --outdir ${outdir} --template ${template}"
       if [[ "${start_at}" != "" ]]; then
-          cmd="${cmd} -start-at ${start_at}"
+          cmd="${cmd} --start-at ${start_at}"
       fi
       if [[ "${author}" != "" ]]; then
-          cmd="${cmd} --author '${author}'"
+          cmd="${cmd} --author \"${author}\""
       fi
       if [[ "${categories}" != "" ]]; then
           cmd="${cmd} --categories '${categories}'"
-      fi
-      if [[ "${title}" != "" ]]; then
-          cmd="${cmd} --title '${title}'"
       fi
       if [[ "${layout}" != "" ]]; then
           cmd="${cmd} --layout '${layout}'"
@@ -88,15 +80,12 @@ runs:
       $cmd
     shell: bash
 
-  - name: Update repository
+  - name: Update Repository
     if: (inputs.dry_run == 'false' || inputs.dry_run == false)
     env:
       GITHUB_TOKEN: ${{ inputs.token }}
+      outdir: ${{ inputs.outdir }}
     run: |
-      echo "Found new version ${version}"
-      echo "::group::${package} package.py"
-      cat packages/${package}/package.py
-      echo "::endgroup::"      
       export BRANCH_FROM="release/${package}-${version}"
       git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
       git branch
@@ -105,13 +94,13 @@ runs:
       git config --global user.name "github-actions"
       git config --global user.email "github-actions@users.noreply.github.com"
       git config --global pull.rebase true
-      git add packages/*
+      git add ${outdir}/*
       if git diff-index --quiet HEAD --; then
           printf "No changes\n"
       else
          printf "Changes\n"
          today=$(date '+%Y-%m-%d')
-         git commit -a -m "Automated deployment to update ${package} versions ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
+         git commit -a -m "Automated deployment to update release notes ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
          git push origin "${BRANCH_FROM}"
       fi
       echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV

@@ -131,7 +131,7 @@ class PostGenerator:
             sys.exit("Invalid start_at, must be YYYY-MM-DD, YYYY-MM, or YYYY")
 
     def update_docs(
-        self, template, layout=None, title=None, categories=None, author=None
+        self, template, layout=None, categories=None, author=None
     ):
         """
         Main function to update docs.
@@ -164,7 +164,6 @@ class PostGenerator:
                     template=template,
                     func=func,
                     layout=layout,
-                    title=title,
                     categories=categories,
                     author=author,
                 )
@@ -185,7 +184,6 @@ class PostGenerator:
         release,
         template,
         layout=None,
-        title=None,
         categories=None,
         author=None,
     ):
@@ -198,7 +196,6 @@ class PostGenerator:
             body = special_parsing[func](body, version)
 
         download_url = release["assets"][0]["browser_download_url"]
-        print(download_url)
 
         render = {
             "notes": body,
@@ -206,7 +203,6 @@ class PostGenerator:
             "author": author,
             "categories": categories,
             "layout": layout,
-            "header": title,
             "download_url": download_url,
             "version": version,
             "datestr": str(datetime.now()),
@@ -220,6 +216,10 @@ class PostGenerator:
         outfile = os.path.join(self.outdir, f"{datestr}-{repo}-{version}.md")
         print(f"Writing {outfile} to file.")
         write_file(result, outfile)
+        print()
+        print(f"::group::⭐️{release['name']}")
+        print(result)
+        print("::endgroup::")
 
     def discover_existing(self):
         """
@@ -283,9 +283,6 @@ def get_parser():
         "--categories", help="post categories, comma separated with no spaces."
     )
     parser.add_argument(
-        "--title", help="heading to put on page (title is automatically generated)"
-    )
-    parser.add_argument(
         "--layout", help="layout for post, if desired to change from default."
     )
     parser.add_argument(
@@ -307,7 +304,6 @@ def main():
     args, extra = parser.parse_known_args()
 
     # Show args to the user
-    print("     title: %s" % (args.title or "no title set"))
     print("     repos: %s" % args.repos)
     print("    author: %s" % (args.author or "no author set"))
     print("    outdir: %s" % args.outdir)
@@ -327,13 +323,15 @@ def main():
     if args.categories:
         categories = args.categories.split(",")
 
+    author = args.author
+    if author:
+        author = author.strip('"').strip("'").strip('"')
     gen = PostGenerator(repos=args.repos, outdir=args.outdir, start_at=args.start_at)
     gen.update_docs(
         args.template,
         layout=args.layout,
-        title=args.title,
         categories=categories,
-        author=args.author,
+        author=author,
     )
 
 
