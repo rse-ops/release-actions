@@ -52,7 +52,6 @@ This script is primarily meant to be used as a GitHub action! Here are variables
 | repos    | Path to contributor-ci.yaml file with repos index | true | contributor-ci.yaml |
 | author   | Name of author | false | unset |
 | categories | Comma separated list of categories (no spaces) for the post | false | release |
-| title    | header to write on page (not the title attribute, but in markdown).| false | "# Release Notes" |
 | layout   | Post layout to use. Default to unset (no layout, uses default site sets for posts) | false | unset |
 | outdir   | Output directory for posts (defaults to _posts in root)  | false | _posts |
 | dry_run  | Don't open a pull request - just generate files. | false | false |
@@ -60,6 +59,40 @@ This script is primarily meant to be used as a GitHub action! Here are variables
 | branch | branch to open a pull request to | false | main |
 | template | use a custom template (should expect same variables as default) | false | template.md in repo here |
 
+
+Here is how you might use it in an action:
+
+```yaml
+name: Update Docs
+on:
+  schedule:
+    - cron: 23 2 * * *
+
+jobs:
+  update-release-docs:
+    name: Generate posts for flux projects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Clone flux-framework.github.io
+        run: git clone https://github.com/flux-framework/flux-framework.github.io /tmp/flux
+
+      - name: Flux projects update
+        uses: rse-ops/release-actions/docs@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          outdir: /tmp/flux/_posts
+          author: flux-framework
+          layout: default
+          start_at: 2022
+
+          # These are defaults
+          # repos: ./contributor-ci.yaml
+          # dry_run: false
+
+```
 
 ### Locally
 
@@ -79,7 +112,7 @@ If you want to start at a particular date, either a `YYYY-MM-DD` or `YYYY-MM` or
 For example, this would only add releases after 2021 (implied January 1st):
 
 ```bash
-$ python ./scripts/make_release_docs.py --repos ../contributor-ci.yaml --outdir ../examples/docs/_posts --start-at 2021
+$ python ./scripts/make_release_docs.py --repos ../contributor-ci.yaml --outdir ../examples/docs/_posts --start-at 2022
 ```
 
 Note that there are many ways you can customize the output, everything from the variables to the

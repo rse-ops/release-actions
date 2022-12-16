@@ -10,6 +10,6 @@ download: {{ download_url }}
 
 Download from GitHub [here]({% raw %}{{ page.download }}{% endraw %})
 
-{% if header %}{{ header }}{% endif %}
+# Release Notes
 
 {{ notes }}

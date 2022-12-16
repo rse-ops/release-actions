@@ -15,10 +15,6 @@ inputs:
     description: Comma separated list (no spaces) of categories for the post. Defaults to "release"
     required: false
     default: release
-  title:
-    description: title to write on page (not the title attribute, but in markdown). Defaults to "# Release Notes" unless empty, then left out.
-    required: false
-    default: "# Release Notes"
   layout:
     description: Post layout to use. Default to unset (no layout, uses default site sets for posts)
     required: false
@@ -57,7 +53,6 @@ runs:
       outdir: ${{ inputs.outdir }}
       author: ${{ inputs.author }}
       categories: ${{ inputs.categories }}
-      title: ${{ inputs.title }}
       layout: ${{ inputs.layout }}
       repos: ${{ inputs.repos }}
       start_at: ${{ inputs.start_at }}
@@ -77,9 +72,6 @@ runs:
       fi
       if [[ "${categories}" != "" ]]; then
           cmd="${cmd} --categories '${categories}'"
-      fi
-      if [[ "${title}" != "" ]]; then
-          cmd="${cmd} --title '${title}'"
       fi
       if [[ "${layout}" != "" ]]; then
           cmd="${cmd} --layout '${layout}'"
