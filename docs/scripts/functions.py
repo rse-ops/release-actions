@@ -3,7 +3,7 @@ import re
 import sys
 
 
-def linked_news_markdown_rst(body, version):
+def linked_news_markdown_rst(body, repo, version):
     """
     Parse a NEWS.md in the body with a ---- separator
     """
@@ -12,13 +12,18 @@ def linked_news_markdown_rst(body, version):
     body = [x for x in body.split("\n") if "NEWS.md" in x]
     if not body:
         sys.exit("Cannot find NEWS.md in body.")
-    match = re.search("(?P<url>https?://[^\s]+)?[)]", body[0])
+    news_link = body[0].split("NEWS.md", 1)[0] + "NEWS.md)"
+    match = re.search("(?P<url>https?://[^\s]+)?[)]", news_link)
     if not match:
         sys.exit("Cannot find NEWS.md in body.")
     url = match.group("url")
     url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob", "")
     response = requests.get(url)
     if response.status_code != 200:
+        import IPython
+
+        IPython.embed()
+
         sys.exit("Cannot find NEWS.md in body.")
     body = response.text
 
@@ -39,7 +44,24 @@ def linked_news_markdown_rst(body, version):
             break
         notes.append(line)
     notes = notes[:-1]
-    body = "\n".join(notes)
+
+    # For each note, find an issue in parens, change to a full link
+    updated = []
+    for line in notes:
+        match = re.search("[(][#][0-9]+[)]", line)
+        if match:
+            # Assemble the new link - issues already redirect to PRs
+            number = line[match.start() + 2 : match.end() - 1]
+            issue_url = f"https://github.com/{repo}/issues/{number}"
+            line = (
+                line[: match.start()]
+                + f"([#{number}]({issue_url}))"
+                + line[match.end() :]
+            )
+
+        updated.append(line)
+
+    body = "\n".join(updated)
     return body
 
 
