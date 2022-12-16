@@ -160,7 +160,7 @@ class PostGenerator:
                 func = self.functions.get(reponame)
                 self.write_release(
                     release=release,
-                    repo=repo,
+                    reponame=reponame,
                     template=template,
                     func=func,
                     layout=layout,
@@ -180,7 +180,7 @@ class PostGenerator:
     def write_release(
         self,
         func,
-        repo,
+        reponame,
         release,
         template,
         layout=None,
@@ -190,10 +190,19 @@ class PostGenerator:
         """
         Write the release from the body
         """
+        _, repo = reponame.split("/", 1)
         version = self.get_version(release)
         body = release["body"]
         if func and func in special_parsing:
-            body = special_parsing[func](body, version)
+            body = special_parsing[func](body, reponame, version)
+            if body is None:
+                print(f"{repo}@{version} body could not be parsed, skipping.")
+                return
+
+        # Releases without assets?
+        if not release["assets"]:
+            print(f"{repo}@{version} does not have associated assets, skipping.")
+            return
 
         download_url = release["assets"][0]["browser_download_url"]
         created_at = self.parse_created_at_date(release)
