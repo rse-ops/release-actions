@@ -65,7 +65,7 @@ runs:
       fi
       cmd="python ${action_path}/scripts/make_release_docs.py --repos ${repos} --outdir ${outdir} --template ${template}"
       if [[ "${start_at}" != "" ]]; then
-          cmd="${cmd} -start-at ${start_at}"
+          cmd="${cmd} --start-at ${start_at}"
       fi
       if [[ "${author}" != "" ]]; then
           cmd="${cmd} --author '${author}'"
