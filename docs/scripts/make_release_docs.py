@@ -196,6 +196,7 @@ class PostGenerator:
             body = special_parsing[func](body, version)
 
         download_url = release["assets"][0]["browser_download_url"]
+        created_at = self.parse_created_at_date(release)
 
         render = {
             "notes": body,
@@ -205,13 +206,12 @@ class PostGenerator:
             "layout": layout,
             "download_url": download_url,
             "version": version,
-            "datestr": str(datetime.now()),
+            "datestr": str(created_at),
         }
         with open(template, "r") as fd:
             template = Template(fd.read())
         result = template.render(**render)
 
-        created_at = self.parse_created_at_date(release)
         datestr = created_at.strftime("%Y-%m-%d")
         outfile = os.path.join(self.outdir, f"{datestr}-{repo}-{version}.md")
         print(f"Writing {outfile} to file.")
