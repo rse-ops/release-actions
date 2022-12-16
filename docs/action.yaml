@@ -86,7 +86,8 @@ runs:
       GITHUB_TOKEN: ${{ inputs.token }}
       outdir: ${{ inputs.outdir }}
     run: |
-      export BRANCH_FROM="release/${package}-${version}"
+      today=$(date '+%Y-%m-%d')
+      export BRANCH_FROM="release-docs-${today}"
       git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
       git branch
       git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
@@ -97,17 +98,18 @@ runs:
       git add ${outdir}/*
       if git diff-index --quiet HEAD --; then
           printf "No changes\n"
+          echo "PULL_REQUEST_OPEN=0" >> $GITHUB_ENV  
       else
          printf "Changes\n"
-         today=$(date '+%Y-%m-%d')
          git commit -a -m "Automated deployment to update release notes ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
          git push origin "${BRANCH_FROM}"
+         echo "PULL_REQUEST_OPEN=1" >> $GITHUB_ENV       
       fi
       echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
     shell: bash
 
   - name: Open Pull Request
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
+    if: (env.PULL_REQUEST_OPEN = '1')
     uses: vsoch/pull-request-action@c8e84cea4c91c3379be16bc011c195edd3abbb2d # 1.0.23
     env:
       GITHUB_TOKEN: ${{ inputs.token }}
