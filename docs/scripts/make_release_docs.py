@@ -130,9 +130,7 @@ class PostGenerator:
         else:
             sys.exit("Invalid start_at, must be YYYY-MM-DD, YYYY-MM, or YYYY")
 
-    def update_docs(
-        self, template, layout=None, categories=None, author=None
-    ):
+    def update_docs(self, template, layout=None, categories=None, author=None):
         """
         Main function to update docs.
         """
@@ -149,7 +147,9 @@ class PostGenerator:
                 tag = tag_bare = release["tag_name"]
                 if tag.startswith("v"):
                     tag_bare = re.sub("^v", "", tag)
-                if tag in self.existing.get(repo, {}) or tag_bare in self.existing.get(repo, {}):
+                if tag in self.existing.get(repo, {}) or tag_bare in self.existing.get(
+                    repo, {}
+                ):
                     continue
 
                 if not self.within_range(release):
@@ -323,15 +323,12 @@ def main():
     if args.categories:
         categories = args.categories.split(",")
 
-    author = args.author
-    if author:
-        author = author.strip('"').strip("'").strip('"')
     gen = PostGenerator(repos=args.repos, outdir=args.outdir, start_at=args.start_at)
     gen.update_docs(
         args.template,
         layout=args.layout,
         categories=categories,
-        author=author,
+        author=args.author,
     )
 
 

@@ -68,7 +68,7 @@ runs:
           cmd="${cmd} --start-at ${start_at}"
       fi
       if [[ "${author}" != "" ]]; then
-          cmd="${cmd} --author \"${author}\""
+          cmd="${cmd} --author ${author}"
       fi
       if [[ "${categories}" != "" ]]; then
           cmd="${cmd} --categories '${categories}'"

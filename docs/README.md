@@ -45,7 +45,6 @@ not found, we fall back to using the raw body.
 
 This script is primarily meant to be used as a GitHub action! Here are variables allowed:
 
-|----------|----------|------------|----------|
 | Name     | Description | Required | Default |
 |----------|-----------|------------|---------|
 | token    | GitHub token | true    | unset   |
