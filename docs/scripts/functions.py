@@ -4,8 +4,10 @@ import sys
 
 
 def return_failure(repo, version):
+    """
+    Return with None and print a message to alert issue.
+    """
     print(f"Cannot find NEWS.md in body for {repo}@{version}.")
-    return
 
 
 def linked_news_markdown_rst(body, repo, version):
