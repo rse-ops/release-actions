@@ -1,0 +1,125 @@
+name: Release Docs Generator
+description: create markdown release notes for a Jekyll site
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  repos:
+    description: contributor-ci.yaml with repos section to parse
+    required: false
+    default: contributor-ci.yaml
+  author:
+    description: Author of post. If not defined, will not be added.
+    required: false
+  categories:
+    description: Comma separated list (no spaces) of categories for the post. Defaults to "release"
+    required: false
+    default: release
+  title:
+    description: title to write on page (not the title attribute, but in markdown). Defaults to "# Release Notes" unless empty, then left out.
+    required: false
+    default: "# Release Notes"
+  layout:
+    description: Post layout to use. Default to unset (no layout, uses default site sets for posts)
+    required: false
+  outdir:
+    description: Output directory for posts (defaults to _posts in root) 
+    required: false
+    default: _posts
+  dry_run:
+    description: Don't open a pull request - just generate files.
+    required: false
+    default: false
+  start_at:
+    description: Date string in format (YYYY-MM-DD) or YYYY to start parsing. 
+    required: false
+  branch:
+    description: branch to open a pull request to
+    required: false
+    default: main
+  template:
+    description: use a custom template (should expect same variables as default)
+    required: false
+    default: "[default]"
+
+runs:
+  using: composite
+  steps:
+  - name: Install dependencies
+    env:
+      action_path: ${{ github.action_path }}
+    run: pip install -r ${action_path}/requirements.txt
+    shell: bash
+
+  - name: Check for New Releases
+    id: check
+    env:
+      outdir: ${{ inputs.outdir }}
+      author: ${{ inputs.author }}
+      categories: ${{ inputs.categories }}
+      title: ${{ inputs.title }}
+      layout: ${{ inputs.layout }}
+      repos: ${{ inputs.repos }}
+      start_at: ${{ inputs.start_at }}
+      template: ${{ inputs.template }}
+      GITHUB_TOKEN: ${{ inputs.token }}
+      action_path: ${{ github.action_path }}
+    run: |
+      if [[ "$template" == "[default]" ]]; then
+          template=${action_path}/template.md
+      fi
+      cmd="python ${action_path}/scripts/make_release_docs.py --repos ${repos} --outdir ${outdir} --template ${template}"
+      if [[ "${start_at}" != "" ]]; then
+          cmd="${cmd} -start-at ${start_at}"
+      fi
+      if [[ "${author}" != "" ]]; then
+          cmd="${cmd} --author '${author}'"
+      fi
+      if [[ "${categories}" != "" ]]; then
+          cmd="${cmd} --categories '${categories}'"
+      fi
+      if [[ "${title}" != "" ]]; then
+          cmd="${cmd} --title '${title}'"
+      fi
+      if [[ "${layout}" != "" ]]; then
+          cmd="${cmd} --layout '${layout}'"
+      fi
+      printf "${cmd}\n"
+      $cmd
+    shell: bash
+
+  - name: Update repository
+    if: (inputs.dry_run == 'false' || inputs.dry_run == false)
+    env:
+      GITHUB_TOKEN: ${{ inputs.token }}
+    run: |
+      echo "Found new version ${version}"
+      echo "::group::${package} package.py"
+      cat packages/${package}/package.py
+      echo "::endgroup::"      
+      export BRANCH_FROM="release/${package}-${version}"
+      git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+      git branch
+      git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
+      git branch
+      git config --global user.name "github-actions"
+      git config --global user.email "github-actions@users.noreply.github.com"
+      git config --global pull.rebase true
+      git add packages/*
+      if git diff-index --quiet HEAD --; then
+          printf "No changes\n"
+      else
+         printf "Changes\n"
+         today=$(date '+%Y-%m-%d')
+         git commit -a -m "Automated deployment to update ${package} versions ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
+         git push origin "${BRANCH_FROM}"
+      fi
+      echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
+    shell: bash
+
+  - name: Open Pull Request
+    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
+    uses: vsoch/pull-request-action@c8e84cea4c91c3379be16bc011c195edd3abbb2d # 1.0.23
+    env:
+      GITHUB_TOKEN: ${{ inputs.token }}
+      PULL_REQUEST_BRANCH: ${{ inputs.branch }}
