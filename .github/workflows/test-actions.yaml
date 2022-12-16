@@ -3,7 +3,7 @@ on:
   pull_request: []
 
 jobs:
-  update-spack:
+  test-docs:
     name: Generate posts for flux projects
     runs-on: ubuntu-latest
     steps:

@@ -3,7 +3,7 @@ title: {{ title }}
 date: {{ datestr }}
 {% if layout %}layout: {{ layout }}
 {% endif %}{% if author %}author: "{{ author }}"
-{% endif %}{% if categories %}categories: {% for category in categories %}{{ category }}{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+{% endif %}{% if categories %}categories: {% for category in categories %}{{ category }}{% if loop.last %}{% else %},{% endif %}{% endfor %}
 {% endif %}version: {{ version }}
 download: {{ download_url }}
 ---
