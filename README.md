@@ -1,6 +1,6 @@
 # Release Actions
 
-![img/rse-ops-librarian.png](img/rse-ops-librarian.png)
+![img/rse-ops-ci.png](img/rse-ops-ci.png)
 
 [![License](https://img.shields.io/badge/License-MIT%203--Clause-blue.svg)](https://github.com/rse-ops/release-actions/blob/main/LICENSE)
 
