@@ -55,6 +55,8 @@ def linked_news_markdown_rst(body, repo, version):
     # For each note, find an issue in parens, change to a full link
     updated = []
     for line in notes:
+
+        # Match (#327)
         match = re.search("[(][#][0-9]+[)]", line)
         if match:
             # Assemble the new link - issues already redirect to PRs
@@ -66,6 +68,26 @@ def linked_news_markdown_rst(body, repo, version):
                 + line[match.end() :]
             )
 
+        # Match (#327, #328, #329)
+        elif (
+            "(" in line
+            and ")" in line
+            and line.count("(") == 1
+            and line.count(")") == 1
+        ):
+            left, middle, right = re.split("[(]|[)]", line)
+            parts = [x.strip() for x in middle.split(",") if x.strip()]
+            # Assemble new set of links
+            links = []
+            for part in parts:
+                if not part.startswith("#"):
+                    continue
+                number = part.replace("#", "", 1)
+                issue_url = f"https://github.com/{repo}/issues/{number}"
+                links.append(f"[{part}]({issue_url})")
+
+            middle = ", ".join(links)
+            line = f"{left}({middle}){right}"
         updated.append(line)
 
     body = "\n".join(updated)

@@ -101,7 +101,8 @@ If you want to use the action script locally - you can! Make sure to install dep
 $ pip install -r requirements.txt
 ```
 
-And then run against your contributor-ci.yaml (with repos populated) and the output directory:
+And then run against your contributor-ci.yaml (with repos populated) and the output directory.
+We are running this from the context of this "docs" directory:
 
 ```bash
 $ python ./scripts/make_release_docs.py --repos ../contributor-ci.yaml --outdir ../examples/docs/_posts
