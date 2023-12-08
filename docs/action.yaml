@@ -110,7 +110,7 @@ runs:
 
   - name: Open Pull Request
     if: (env.PULL_REQUEST_OPEN == '1')
-    uses: vsoch/pull-request-action@c8e84cea4c91c3379be16bc011c195edd3abbb2d # 1.0.23
+    uses: vsoch/pull-request-action@main
     env:
       GITHUB_TOKEN: ${{ inputs.token }}
       PULL_REQUEST_BRANCH: ${{ inputs.branch }}
